@@ -17,7 +17,7 @@ def auth():
 # Searches for a specified playlist and displays the results
 def search_helper(q):
 	token = auth()
-	response = requests.get(f"https://api.spotify.com/v1/search/?q={q}&type=playlist&limit=2", headers=token).json()
+	response = requests.get(f"https://api.spotify.com/v1/search/?q={q}&type=playlist&limit=25", headers=token).json()
 	results = list()
 	for playlist in response['playlists']['items']:
 		results.append(playlist)
@@ -30,7 +30,7 @@ def get_tracks(playlist_id):
 	tracks = list()
 	for track in response['items']:
 		tracks.append(f"{track['track']['name']} by {track['track']['artists'][0]['name']}")
-	
+
 	for track in tracks:
 		print(track)
 	return tracks

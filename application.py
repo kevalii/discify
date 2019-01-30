@@ -18,7 +18,7 @@ def validate(q, limit):
 	try:
 		q = int(q)
 
-		if q > limit:
+		if q > limit or q < 1:
 			return False
 		return q
 	except:
@@ -59,30 +59,34 @@ async def search_playlists(message):
 	# Follow-up
 	await client.send_message(message.channel, "**Please choose or preview a playlist (e.g. '$choose 1' or '$preview 1').**")
 	message = await client.wait_for_message(author=message.author)
-	q = message.content.split(' ', 1)[1]
-
-	# Query validation; three attempts allowed
-	count = 0
-	while not validate(q, lim) and count < 3:
-		count += 1
-		await client.send_message(message.channel, f"Invalid input. Please try again. Attempt {count} out of 3")
-		message = await client.wait_for_message(author=message.author)
-		if not count <= 3:
-			await client.send_message(message.channel, '**Resetting**')
-			return
-		q = message.content.split(' ', 1)[1]
-
-	# Further follow-up
-	q = int(q) - 1 if int(q) - 1 < 0 else 0
-	playlist = results[int(q)][1]['external_urls']['spotify']
 
 	# We process the query before the command is parsed to simplify things
-	while(message.content.startswith('$preview ')):
-		await client.send_message(message.channel, f"{playlist}")
-		message = await client.wait_for_message(author=message.author)
+	while(True):
+		q = message.content.split(' ', 1)[1]
 
-	if message.content.startswith('$choose '):
-		await client.send_message(message.channel, f"**Copy and paste the command below**\n\n`-play {playlist}`")
+		# Query validation; three attempts allowed
+		count = 0
+		while not validate(q, lim) and count < 3:
+			count += 1
+			print(q)
+			await client.send_message(message.channel, f"Invalid input. Please try again. Attempt {count} out of 3")
+			message = await client.wait_for_message(author=message.author)
+			if not count <= 3:
+				await client.send_message(message.channel, '**Resetting**')
+				return
+			q = message.content.split(' ', 1)[1]
+			print(q)
+
+		# Further follow-up
+		q = int(q) - 1 if int(q) - 1 > 0 else 0
+		playlist = results[int(q)][1]['external_urls']['spotify']
+
+		if message.content.startswith('$preview '):
+			await client.send_message(message.channel, f"{playlist}")
+			message = await client.wait_for_message(author=message.author)
+		elif message.content.startswith('$choose '):
+			await client.send_message(message.channel, f"**Copy and paste the command below**\n\n`-play {playlist}`")
+			return
 
 # Leave if channel is empty or if a user is AFK; vestigial feature
 @client.event
