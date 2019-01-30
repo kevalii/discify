@@ -29,22 +29,23 @@ async def on_message(message):
 	# Ensures the bot does not respond to itself
 	if message.author == client.user:
 		return
-
+	# Vestigial feature for now
 	if message.content.startswith('$join'):
 		if message.author.voice.voice_channel is None:
 			await client.send_message(message.channel, '**You are not connected to a voice channel!**')
 		else:
 			await client.join_voice_channel(message.author.voice.voice_channel)
+	# Playlist search
 	elif message.content.startswith('$search '):
 		await search_playlists(message)
- 
+
 async def search_playlists(message):
-	# User query
 	q = message.content.split(' ', 1)[1]
 
 	# Display results
 	results = list(enumerate(search_helper(q), 1))
 	msg = f"**Results for {q}**"
+
 	for count, result in results:
 		msg += f"\n`{count}.` {result['name']} by {result['owner']['display_name']}"
 	# Catch in the case where there are no results
@@ -60,7 +61,7 @@ async def search_playlists(message):
 	message = await client.wait_for_message(author=message.author)
 	q = message.content.split(' ', 1)[1]
 
-	# Query Validation; three attempts allowed
+	# Query validation; three attempts allowed
 	count = 0
 	while not validate(q, lim) and count < 3:
 		count += 1
@@ -83,7 +84,7 @@ async def search_playlists(message):
 	if message.content.startswith('$choose '):
 		await client.send_message(message.channel, f"**Copy and paste the command below**\n\n`-play {playlist}`")
 
-# Leave if channel is empty or if a user is AFK
+# Leave if channel is empty or if a user is AFK; vestigial feature
 @client.event
 async def on_voice_state_update(before, after):
 	if after.voice.is_afk or after.voice.voice_channel is None:
@@ -94,6 +95,6 @@ async def on_voice_state_update(before, after):
 
 @client.event
 async def on_ready():
-	print(f"Successfully logged in as {client.user.name}#{client.user.id}")
+	print(f"Successfully logged in as {client.user.name}")
 
 client.run(DISC_TOKEN)
