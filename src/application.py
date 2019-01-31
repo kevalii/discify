@@ -10,6 +10,7 @@ client = discord.Client()
 
 load_dotenv()
 DISC_TOKEN=os.getenv('DISC_TOKEN')
+ASSETS_DIR=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'assets/')
 
 ### DISCORD ###
 
@@ -38,7 +39,7 @@ async def on_message(message):
 			message = await client.wait_for_message(author=message.author)
 			# Testing ffmpeg player
 			if message.content.startswith('$music'):
-				player = voice.create_ffmpeg_player('assets/reggae.mp3')
+				player = voice.create_ffmpeg_player(f'{ASSETS_DIR}reggae.mp3')
 				player.start()
 	# Playlist search
 	elif message.content.startswith('$search '):
