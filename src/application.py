@@ -34,7 +34,12 @@ async def on_message(message):
 		if message.author.voice.voice_channel is None:
 			await client.send_message(message.channel, '**You are not connected to a voice channel!**')
 		else:
-			await client.join_voice_channel(message.author.voice.voice_channel)
+			voice = await client.join_voice_channel(message.author.voice.voice_channel)
+			message = await client.wait_for_message(author=message.author)
+			# Testing ffmpeg player
+			if message.content.startswith('$music'):
+				player = voice.create_ffmpeg_player('assets/reggae.mp3')
+				player.start()
 	# Playlist search
 	elif message.content.startswith('$search '):
 		await search_playlists(message)
