@@ -14,7 +14,7 @@ Path(f'{CURRENT_DIR}/logs').mkdir(exist_ok=True)
 # Generate latest.log file and replace previous
 latest_path = Path(f'{LOGS_DIR}latest.log')
 if latest_path.exists():
-   latest_path.rename(f"{LOGS_DIR}{strftime('%Y-%m-%d-%H-%M-%S', localtime(latest_path.stat().st_birthtime))}")
+   latest_path.rename(f"{LOGS_DIR}{strftime('%Y-%m-%d-%H-%M-%S', localtime(latest_path.stat().st_mtime))}")
 
 logging.basicConfig(filename=f'{CURRENT_DIR}/logs/latest.log', level=logging.DEBUG)
 
