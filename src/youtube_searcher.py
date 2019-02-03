@@ -3,13 +3,16 @@ from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+load_dotenv()
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
-YOUTUBE_API_KEY = load_dotenv('YOUTUBE_API_KEY')
+YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
 
 # Get YouTube service resource
 def get_service():
-  return build(API_SERVICE_NAME, API_VERSION, developerKey = YOUTUBE_API_KEY)
+  return build(API_SERVICE_NAME, API_VERSION, developerKey=YOUTUBE_API_KEY)
+
+client = get_service()
 
 def print_response(response):
   print(response)
@@ -124,8 +127,19 @@ def search_list_by_keyword(client, **kwargs):
     **kwargs
   ).execute()
 
-  print(response)
   return response
+
+# Returns the video id of the first video in the search result for q
+def search_video(q):
+    try:
+        result = search_list_by_keyword(client,
+            part='snippet',
+            maxResults=1,
+            q=q,
+            type='')
+        return f"https://www.youtube.com/watch?v={result['items'][0]['id']['videoId']}"
+    except KeyError:
+        return None
 
 
 
