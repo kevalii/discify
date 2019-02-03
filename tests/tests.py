@@ -20,15 +20,19 @@ logging.basicConfig(filename=f'{CURRENT_DIR}/logs/latest.log', level=logging.DEB
 
 # Spotify
 def spotify_api():
-   if src.spotify_searcher.search_helper("koalas") is None:
-      logging.warning('Failed to search for Spotify playlists!\n')
+   if src.spotify_searcher.search_helper('koalas') is None:
+      logging.warning('Failed to obtain Spotify playlists!\n')
 
-   if src.spotify_searcher.get_tracks("4ERqwnEWy7WDuoPgGlOPaE") is None:
+   if src.spotify_searcher.get_tracks('4ERqwnEWy7WDuoPgGlOPaE') is None:
       logging.warning('Failed to obtain tracks\n')
 
+def youtube_api():
+   if src.youtube_searcher.search_video('koalas') is None:
+      logging.warning('Failed to obtain Youtube video!')
 
 if __name__ == "__main__":
    logging.info(f"{'#' * 20} Begin tests {'#' * 20}\n")
    spotify_api()
+   youtube_api()
    logging.info(f"{'#' * 20} End tests {'#' * 20}\n")
 

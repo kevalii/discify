@@ -1,8 +1,9 @@
 from spotify_searcher import search_helper, get_tracks
-from playlist_tools import search_list_by_keyword, playlists_insert, playlist_items_insert, get_authenticated_service
+from youtube_searcher import search_video, get_service
 
-client = get_authenticated_service()
+client = get_service()
 
+# To be revised
 def search_tracks(tracks):
 	video_ids = list()
 
@@ -14,16 +15,9 @@ def search_tracks(tracks):
 
 	add_videos(video_ids)
 
-def search_video(q):
-  result = search_list_by_keyword(client,
-    part='snippet',
-    maxResults=1,
-    q=q,
-    type='')
-  return result['items'][0]['id']['videoId']
-
+''' Legacy functions
 def create_playlist(client, title='Untitled playlist', description=''):
-  playlists_insert(client, 
+  playlists_insert(client,
     {'snippet.title': title,
      'snippet.description': description,
      'snippet.tags[]': '',
@@ -34,14 +28,12 @@ def create_playlist(client, title='Untitled playlist', description=''):
 
 def add_videos(ids):
   for video_id in ids:
-    playlist_items_insert(client, 
+    playlist_items_insert(client,
     {'snippet.playlistId': 'PLzGPWqCF_JAn3f44E-zOsExn4INffD3BG', #placeholder
      'snippet.resourceId.kind': 'youtube#video',
      'snippet.resourceId.videoId': video_id,
      'snippet.position': ''},
     part='snippet',
     onBehalfOfContentOwner='')
-
-#print(get_tracks(search_helper('yeehaw')[0]['id']))
-#search_tracks(get_tracks('7LBp7eofa3RjniCKhVZooF'))
+'''
 

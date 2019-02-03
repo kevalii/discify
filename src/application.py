@@ -5,6 +5,7 @@ import os
 import discord
 import asyncio
 from spotify_searcher import search_helper
+from youtube_searcher import search_video, client
 
 client = discord.Client()
 
@@ -30,20 +31,46 @@ async def on_message(message):
 	# Ensures the bot does not respond to itself
 	if message.author == client.user:
 		return
-	# Vestigial feature for now
+	# Explicit call to join
 	if message.content.startswith('$join'):
-		if message.author.voice.voice_channel is None:
-			await client.send_message(message.channel, '**You are not connected to a voice channel!**')
-		else:
-			voice = await client.join_voice_channel(message.author.voice.voice_channel)
-			message = await client.wait_for_message(author=message.author)
-			# Testing ffmpeg player
-			if message.content.startswith('$music'):
-				player = voice.create_ffmpeg_player(f'{ASSETS_DIR}reggae.mp3')
-				player.start()
+		await join(message)
+	# Search for and play a YouTube video
+	if message.content.startswith('$play'):
+		await play_video(message)
 	# Playlist search
 	elif message.content.startswith('$search '):
 		await search_playlists(message)
+
+async def join(message):
+	if message.author.voice.voice_channel is None:
+		await client.send_message(message.channel, '**You are not connected to a voice channel!**')
+	elif message.author.voice.voice_channel in [voice_client.channel for voice_client in client.voice_clients]:
+		return
+	else:
+		return await client.join_voice_channel(message.author.voice.voice_channel)
+
+async def play_video(message):
+	# Check conditions for joining
+	voice = await join(message)
+
+	q = message.content.split(' ', 1)[1]
+	player = await voice.create_ytdl_player(search_video(q))
+	player.start()
+	while(True):
+		message = await client.wait_for_message(author=message.author)
+		if message.content.startswith('$skip'):
+			player.stop()
+			return
+
+		if message.content.startswith('$pause'):
+			player.pause()
+		if message.content.startswith('$resume'):
+			player.resume()
+		if message.content.startswith('$restart'):
+			if player.is_playing():
+				player.stop()
+			player.start()
+
 
 async def search_playlists(message):
 	q = message.content.split(' ', 1)[1]
